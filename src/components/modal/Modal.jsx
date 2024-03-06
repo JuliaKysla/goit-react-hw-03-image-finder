@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import s from './Modal.modulr.css';
+import s from './Modal.module.css';
 
 class Modal extends Component {
   componentDidMount() {
@@ -8,7 +8,6 @@ class Modal extends Component {
   }
   componentWillUnmount() {
     document.body.style.overflowY = 'auto';
-
     document.removeEventListener('keydown', this.handleKeyDown);
   }
 
@@ -25,10 +24,11 @@ class Modal extends Component {
   };
 
   render() {
+    const { tags} = this.props
     return (
       <div className={s.overlay} onClick={this.handleBackdropClick}>
         <div className={s.modal}>
-          <img src={this.props.src.largeImageURL} alt="" />
+          <img src={this.props.src} alt={tags} className={s.largeImage}/>
         </div>
       </div>
     );
