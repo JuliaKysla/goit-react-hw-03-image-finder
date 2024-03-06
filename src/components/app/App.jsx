@@ -5,6 +5,7 @@ import s from "./App.module.css"
 import Loader from "components/loader/Loader";
 import Button from "components/buttom/Button";
 import { fetchImages } from "../../services/api";
+import Modal from "components/modal/Modal";
 
 export class App extends React.Component {
 
@@ -13,9 +14,10 @@ images: [],
 totalHits:0,
 loading: false,
 error: null,
-query:'',
+q:'',
 page:1,
-
+isOpen: false,
+largeImageURL: '',
 }
 
 
@@ -32,14 +34,15 @@ async componentDidMount() {
 }
 
 async componentDidUpdate(prevProps, prevState) {
-const {query, page} = this.state;
+const {q, page} = this.state;
 
-if(prevState.page !== page || prevState.query !== query) {
+if(prevState.q !== q || prevState.page !== page) {
   try {
     this.setState({ loading: true });
-    const {hits, totalHits} = this.state.query ? await fetchImages({
+    const {hits, totalHits} = this.state.q 
+    ? await fetchImages({
       page: this.state.page, 
-      query: this.state.query}) 
+      q: this.state.q}) 
       : await fetchImages({page: this.state.page});
     this.setState(prev => ({images: [...prev.images, ...hits], totalHits: totalHits}))
   } catch (error) {
@@ -50,10 +53,17 @@ if(prevState.page !== page || prevState.query !== query) {
 }
 }
 
+handleImg = largeImageURL => {
+  console.log(largeImageURL)
+  this.setState({ isOpen: true, largeImageURL });
+};
 
+handleToggleModal = () => {
+  this.setState(prev => ({isOpen:!prev.isOpen}))
+}
 handleSetQuery = query => {
 
-this.setState({query: query, images:[], page: 1})
+this.setState({q: query, images:[], page: 1})
 }
 handleLoadMore = () => {
   this.setState(prev => ({page: prev.page +1}))
@@ -62,15 +72,19 @@ handleLoadMore = () => {
 
 
     render() {
-      const { images, loading, totalHits } = this.state;
+      const { images, loading, totalHits, isOpen, largeImageURL } = this.state;
       return (
         <div className={s.App}>
           <Searchbar handleSetQuery={this.handleSetQuery} />
-          <ImageGallery images={images} />
+          <ImageGallery images={images} openModal={this.handleImg}/>
           {loading && !images.length &&<Loader />}
           {images.length > 0 && images.length < totalHits ? (
             <Button onLoadMore={this.handleLoadMore} />
           ) : null}
+
+{isOpen && (
+          <Modal src={largeImageURL} closeModal={this.handleToggleModal} />
+        )}
         </div>
       );
     }

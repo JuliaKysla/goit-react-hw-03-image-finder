@@ -17,7 +17,7 @@ handleSubmit = e => {
   e.preventDefault();
   console.log(this.state)
   this.props.handleSetQuery(this.state.searchValue)
-  this.setState({ seachValue: '' });
+  // this.setState({ seachValue: '' });
 }
 
     render() {
